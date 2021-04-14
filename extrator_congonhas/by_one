@@ -1,0 +1,23 @@
+#!/bin/bash
+
+[ "$#" -lt 4 ] && echo -e "\n\n\t\tUso: $(basename "$0") [LISTA] [ENDPOINT] [COOK1] [INICIAR_EM]" && exit;
+
+POST_TO="$2"
+SALVAR_EM="collect_$RANDOM.csv"
+COOKIE="$3"
+[ -z "$4" ] && INICIAR=0 || INICIAR=$4;
+
+CONSUL_LINKS="$1"
+linha_n=0
+
+printf "\n\n \t\tIniciando em %d" "$INICIAR"
+while IFS= read -r consul_link
+do
+	let "linha_n+=1"
+	[ "$linha_n" -lt "$INICIAR" ] && continue;
+	[ -f "$PWD/movv" ] && break;
+
+	curl -ks \
+	--cookie "ASP.NET_SessionId=$COOKIE" "$consul_link" | ./html_para_csv "$SALVAR_EM" "$POST_TO"
+
+done < "$CONSUL_LINKS"

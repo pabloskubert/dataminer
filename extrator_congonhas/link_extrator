@@ -1,0 +1,12 @@
+#!/bin/bash
+
+[ -z "$1" ] && echo -e "\n\t\tUse $(basename $0) [TARGET HTML] [OUTPUT] [HTTPS]\n" && exit;
+
+TARGET_HTML="$1"
+OUTPUT="$2"
+[ -z "$3" ] && URI="http" || URI="https"
+
+lynx -listonly -nonumbers -dump \
+"$TARGET_HTML" \
+| grep "$URI://congonhas.novavidatec.com.br/DadosCadastrais/IndexCadastro?documento" \
+> "$OUTPUT"

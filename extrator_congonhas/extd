@@ -1,0 +1,18 @@
+#!/bin/bash
+[ -z "$1" ] && echo -e "\n\n\t\tUso: $(basename $0) [NOME DO DOCUMENTO HTML]" && exit;
+
+NOME_BASE="$1"
+TMP_NOME="extrairtudo$RANDOM"
+SALVAR_EM=~/think/links
+BUSCAR_EM=~/Desktop/Browser/Downloads
+QNT_DOCS=$(ls $BUSCAR_EM/$NOME_BASE*.html | wc -l)
+
+for i in $(seq 1 $QNT_DOCS); do
+
+	printf "\n\n\t\tColetando arquivo %s nº %d" "$NOME_BASE" $i
+	./link_extrator "$BUSCAR_EM/$NOME_BASE$i.html" /tmp/"$TMP_NOME$i"
+done
+
+printf "\n\tEscrevendo arquivo %s...\n" "$NOME_BASE.links"
+cat /tmp/"$TMP_NOME"* > "$SALVAR_EM/$NOME_BASE.links"
+

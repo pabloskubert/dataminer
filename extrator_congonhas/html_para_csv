@@ -1,0 +1,42 @@
+#!/bin/bash
+CONSUL=$(cat)
+SALVAR_EM="$1"
+POST_TO="$2"
+
+[ -z "$CONSUL" ] && exit; 
+if [ ! -z "$(echo "$CONSUL" | grep "Object moved.")" ]; then
+	[ ! -f "$PWD/movv" ] && touch "$PWD/movv";
+	exit;
+fi
+
+NOME_LINHA=$(echo "$CONSUL" | grep -n 'use_name_card' | cut -d ":" -f1); let "NOME_LINHA+=1";
+NOME=$(echo "$CONSUL" | sed -n "$NOME_LINHA p" | sed 's/<[^>]*>//g');
+
+NASCIMENTO_LINHA=$(echo "$CONSUL" | grep -n "<span>Nascimento</span>" | cut -d ":" -f1); let "NASCIMENTO_LINHA+=2";
+NASCIMENTO=$(echo "$CONSUL" | sed -n "$NASCIMENTO_LINHA p" | sed 's/<[^>]*>//g')
+
+CPF=$(echo "$CONSUL" | grep "<span id=\"documentoAtual\"><label for=\"\">CPF</label>" | sed 's/CPF//' | sed 's/<[^>]*>//g')
+DIV_CELL=$(echo "$CONSUL" | grep -n "<div class=\"number\">")
+for i in $(seq 1 4); do
+	
+	TEL_LINHA=$(echo "$DIV_CELL" | sed -n "$i p" | cut -d ':' -f1); let "TEL_LINHA+=1";
+	[ "$TEL_LINHA" = "1" ] && break; 
+	TEL=$(echo "$CONSUL" | sed -n "$TEL_LINHA p" | sed 's/<[^>]*>//g' | sed 's/CPF//g');
+	TELEFONES_ENCONTRADOS[i]="$TEL"
+done
+NOME=$(echo -e "$NOME" | sed 's/^ *//g' | sed "s/[^a-zA-Z0-9]/ /g")
+CPF=$(echo -e "$CPF" | sed 's/^ *//g' | sed "s/[^0-9.-]//g")
+NASCIMENTO=$(echo -e "$NASCIMENTO" | sed 's/^ *//g' | sed "s/[^a-zA-Z0-9/]/ /g" | tr -d ' ')
+
+TEL_N=1
+for tel in "${TELEFONES_ENCONTRADOS[@]}"; do
+	tel=$(echo "$tel" |  sed "s/[^a-zA-Z0-9()-]//g")
+	declare "TEL$TEL_N=$tel"
+	let "TEL_N+=1"
+done
+
+#PAYLOAD=$(echo -e "$POST_TO/?concatTo=$SALVAR_EM&NOME=$NOME&CPF=$CPF&NASCIMENTO=$NASCIMENTO&TEL1=$TEL1&TEL2=$TEL2&TEL3=$TEL3&TEL4=$TEL4" | sed 's/ /%20/g')
+#curl -ks -X GET "$PAYLOAD"
+
+echo "\"$NOME\",\"$NASCIMENTO\",\"$CPF\",\"$TEL1\",\"$TEL2\",\"$TEL3\",\"$TEL4\"" >> "$HOME/INFOS_EXTRAIDAS/$SALVAR_EM"
+
