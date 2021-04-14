@@ -46,10 +46,11 @@ Siga os passos abaixo para extrair funcionários em massa de um CNPJ no sistema 
   - 3º Use o *link_extrator* para retirar os links de consulta para os CPF's de cada __funcionário__
   - 4º Execute o extrair: __./extrair__ sadia.links 0 "cookie" 0 
 
-
 Onde: 
 - sadia.links é o arquivo de saída do *link_extrator*
 - 0 ~ Ignorar -> URL do ngrok para postar os resultados
 - "cookie" -> Somente o __valor__ do cookie __ASP.NET_SessionId__
 - 0 ~ Iniciar em, caso deseje pular (INTERRUPÇÕES)
+
+O arquivo CSV resultado das consultas será concatenado em $HOME/INFOS_EXTRAIDAS/collect_\[RANDOM\].csv
 
