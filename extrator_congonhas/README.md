@@ -1,4 +1,4 @@
-## Scraper feito em bash para o sistema congonhas da novavidatec
+## Scraper feito em shellscript para o sistema congonhas da novavidatec
 
 
 ### Problema 
